@@ -1,0 +1,101 @@
+
+/* Table Styling */
+table{
+    width: 100%;
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background-color: #343a40; /* Dark Header */
+    color: white;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa; /* Light hover effect */
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.4em 0.7em;
+}
+
+.btn-sm {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+}
+
+/* Ensure no margin or padding around html and body */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+/* Remove the default margin and padding in container */
+.container {
+    margin-left: auto;  /* Remove any default margin */
+    padding: 0 ; /* Remove any default padding */
+}
+
+.row{
+    margin-left: auto;
+}
+
+.navbar{
+    height: 12vh;
+    
+}
+.navbar a{
+   font-size: 2em;
+    color: black;
+}
+
+.page-item{
+    margin-left: 1rem;
+    margin-right:1rem ;
+}
+
+.col-md-9 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+/* Responsive Card Styling */
+
+/* Button Styles */
+.btn {
+    border-radius: 5px;
+    font-size: 1rem;
+    padding: 8px 16px;
+}
+
+
+
+
+/* Responsive Navigation */
+.navbar {
+    background-color: #007bff;
+}
+
+.navbar .navbar-brand {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.navbar .nav-link {
+    color: white;
+    font-size: 1rem;
+}
+
+
+/* Custom Footer Styling */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;
+    color: white;
+}
+

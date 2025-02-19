@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Misstänkta Transaktioner{% endblock %}
+
+{% block content %}
+
+<h2>Misstänkta Transaktioner</h2>
+
+<!-- Välj vy -->
+<form method="GET" action="{{ url_for('fraud_detection') }}">
+    <label for="view_type">Välj vy:</label>
+    <select name="view_type" onchange="this.form.submit()">
+        <option value="transactions" {% if view_type == 'transactions' %}selected{% endif %}>Se misstänkta transaktioner</option>
+        <option value="report" {% if view_type == 'report' %}selected{% endif %}>Generera penningtvättsrapport</option>
+    </select>
+</form>
+
+<hr>
+
+{% if view_type == 'transactions' %}
+    <!-- Lista misstänkta transaktioner -->
+    <h3>Lista över misstänkta transaktioner</h3>
+    <table>
+        <tr>
+            <th>Transaktionsnummer</th>
+            <th>Kund</th>
+            <th>Kontonummer</th>
+            <th>Belopp</th>
+            <th>Datum</th>
+        </tr>
+        {% for transaction in flagged_transactions %}
+        <tr>
+            <td>{{ transaction.id }}</td>
+            <td>{{ transaction.customer_name }}</td>
+            <td>{{ transaction.account_number }}</td>
+            <td>{{ transaction.amount }} kr</td>
+            <td>{{ transaction.date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% elif view_type == 'report' %}
+    <!-- Generera rapport -->
+    <h3>Generera penningtvättsrapport</h3>
+    <form method="POST" action="{{ url_for('generate_fraud_report') }}">
+        <button type="submit">Skapa rapport</button>
+    </form>
+
+    {% if report_generated %}
+        <p>Rapport har genererats och skickats till relevanta mottagare.</p>
+    {% endif %}
+
+{% endif %}
+
+{% endblock %}

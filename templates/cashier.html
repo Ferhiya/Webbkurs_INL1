@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Cashier Dashboard - Lindas SUPER-BANK{% endblock %}
+
+{% block content %}
+<main class="container-fluid">
+    <div class="row">
+      
+        <!-- Main Content Area -->
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Välkommen till cashier Panel</h2>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Kundlista</h5>
+                </div>
+                <div class="card-body">
+                    <a class="nav-link" href="/cashierwork/customer">
+                        <i class="bi bi-person-lines-fill"></i> Kundlista
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title"> Skapa kunder</h5>
+                </div>
+                <div class="card-body">
+                    <a class="nav-link" href="/cashierwork/create_customer">
+                        <i class="bi bi-person-lines-fill"></i> Skapa kunder
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Skapa Konto</h5>
+                </div>
+                <div class="card-body">
+                    <a class="nav-link" href="/cashierwork/search_customer_for_account">
+                        <i class="bi bi-person-plus"></i> Skapa Konto
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Insättigheter</h5>
+                </div>
+                <div class="card-body">
+                    <a class="nav-link" href="/cashierwork/deposit">
+                        <i class="bi bi-person-lines-fill"></i> Hantera insättningar
+                    </a>
+                </div>
+            </div>
+        </div>
+           <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Uttag</h5>
+                    </div>
+                    <div class="card-body">
+                        <a class="nav-link" href="/cashierwork/withdraw">
+                            <i class="bi bi-bar-chart-line"></i> Hantera Uttag
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Överföringar</h5>
+                    </div>
+                    <div class="card-body">
+                        <a class="nav-link" href="/cashierwork/transfer">
+                            <i class="bi bi-bar-chart-line"></i> Hantera Överföring
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Snabbåtkomst till kund</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="{{ url_for('view_account') }}">
+                            <div class="input-group">
+                                <input type="number" name="customer_id" class="form-control" placeholder="Ange kund-ID" required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Sök
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+</main>
+{% endblock %}

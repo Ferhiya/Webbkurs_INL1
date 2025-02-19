@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Överföring - Lindas SUPER-BANK{% endblock %}
+
+{% block content %}
+<main class="container-fluid">
+    <h2>Överföring mellan konton</h2>
+ <!-- Flash message display -->
+ {% with messages = get_flashed_messages(with_categories=true) %}
+ {% if messages %}
+     {% for category, message in messages %}
+         <div class="alert alert-{{ category }} mt-3" role="alert">
+             {{ message }}
+         </div>
+     {% endfor %}
+ {% endif %}
+{% endwith %}
+
+    <form method="POST">
+        <div class="row">
+            <!-- Search for source account - Left side -->
+            <div class="col-md-6">
+                <h4>Källkonto</h4>
+                <div class="form-group">
+                    <label for="source_search">Sök Källkonto:</label>
+                    <input type="text" id="source_search" class="form-control" placeholder="Sök med kundnamn, kontonummer eller saldo" oninput="filterAccounts('source')">
+                </div>
+                <div id="source_results" class="form-group">
+                    <!-- Search results for source account will appear here -->
+                </div>
+                <input type="hidden" name="source_account_id" id="source_account_id">
+            </div>
+
+            <!-- Search for destination account - Right side -->
+            <div class="col-md-6">
+                <h4>Målkonto</h4>
+                <div class="form-group">
+                    <label for="destination_search">Sök Målkonto:</label>
+                    <input type="text" id="destination_search" class="form-control" placeholder="Sök med kundnamn, kontonummer eller saldo" oninput="filterAccounts('destination')">
+                </div>
+                <div id="destination_results" class="form-group">
+                    <!-- Search results for destination account will appear here -->
+                </div>
+                <input type="hidden" name="destination_account_id" id="destination_account_id">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Belopp:</label>
+            <input type="text" name="amount" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Överför</button>
+    </form>
+</main>
+
+<script>
+    // Pass only necessary data for accounts (id, account_type, balance, given_name, surname)
+    var accounts = [
+        {% for account in accounts %}
+            {
+                "id": "{{ account.id }}",
+                "account_type": "{{ account.account_type.value }}",
+                "balance": "{{ account.balance }}",
+                "given_name": "{{ account.customer.given_name }}",
+                "surname": "{{ account.customer.surname }}"
+            },
+        {% endfor %}
+    ];
+
+    // Filter function to show only accounts that match the search term
+    function filterAccounts(type) {
+        var searchValue = document.getElementById(type + '_search').value.toLowerCase();
+        var resultsContainer = document.getElementById(type + '_results');
+        resultsContainer.innerHTML = '';  // Clear previous results
+
+        if (searchValue) {
+            // Loop through all accounts and check if any match the search query
+            var filteredAccounts = accounts.filter(function(account) {
+                var accountInfo = (account.id + " " + account.account_type + " " + account.balance + " SEK " + account.given_name + " " + account.surname).toLowerCase();
+                return accountInfo.indexOf(searchValue) > -1;
+            });
+
+            // Display the filtered results
+            filteredAccounts.forEach(function(account) {
+                var accountElement = document.createElement('div');
+                accountElement.classList.add('account-option');
+                accountElement.innerHTML = `
+                    <div>
+                        <strong>${account.id}</strong> - ${account.account_type} (${account.balance} SEK) - ${account.given_name} ${account.surname}
+                    </div>
+                    <button type="button" class="btn btn-link" onclick="selectAccount('${type}', ${account.id})">Välj konto</button>
+                `;
+                resultsContainer.appendChild(accountElement);
+            });
+        }
+    }
+
+    // Function to select an account from the search results
+    function selectAccount(type, accountId) {
+        var selectedAccount = accounts.find(function(account) {
+            return account.id == accountId;
+        });
+
+        // Set the selected account id in the hidden input field
+        document.getElementById(type + '_account_id').value = selectedAccount.id;
+        document.getElementById(type + '_search').value = selectedAccount.account_type + ' ' + selectedAccount.given_name + ' ' + selectedAccount.surname;
+
+        // Hide the results after selection
+        document.getElementById(type + '_results').innerHTML = '';
+    }
+</script>
+
+{% endblock %}

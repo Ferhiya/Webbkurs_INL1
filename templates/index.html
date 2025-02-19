@@ -1,7 +1,74 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
-{% block title %}Home page{% endblock title%}
+{% block title %}Startsida{% endblock title %}
 
 {% block content %}
-<h1>Welcome to Lindas SUPER-BANK</h1>
+<main class="container my-5">
+    <h1 class="text-center">Banköversikt</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-primary mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title text-primary">Totalt Antal Kunder</h3>
+                    <p class="card-text display-4">{{ total_customers }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-primary mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title text-primary">Totalt Antal Konton</h3>
+                    <p class="card-text display-4">{{ total_accounts }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-primary mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title text-primary">Total Saldon</h3>
+                    <p class="card-text display-4">{{ total_balance }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-5">Statistik per Land</h2>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <input type="text" id="countrySearch" class="form-control" placeholder="Sök efter land..." onkeyup="filterCountries()">
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Land</th>
+                <th>Antal Kunder</th>
+                <th>Antal Konton</th>
+                <th>Total Saldon</th>
+                <th>Se Toppkunder</th>
+            </tr>
+        </thead>
+        <tbody id="countryTable">
+            {% for country in country_stats %}
+            <tr>
+                <td>{{ country.country }}</td>
+                <td>{{ country.total_customers }}</td>
+                <td>{{ country.total_accounts }}</td>
+                <td>{{ country.total_balance }} kr</td>
+                <td>
+                    <a href="{{ url_for('top_customers', country=country.country) }}" class="btn btn-primary btn-sm">
+                        Visa
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+
+
 {% endblock content %}

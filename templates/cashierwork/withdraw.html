@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Uttag - Lindas SUPER-BANK{% endblock %}
+
+{% block content %}
+<main class="container-fluid">
+    <div class="row">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Välkommen till Uttag Panel</h2>
+        </div>
+
+        <!-- Sök efter kund -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Sök efter kund</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('withdraw_page') }}" class="d-flex">
+                    <input type="text" name="search" value="{{ search_query }}" placeholder="Sök kund" class="form-control me-2">
+                    <button type="submit" class="btn btn-primary">Sök</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Visa sökresultat om det finns kunder -->
+        {% if customers %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Sökresultat</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Namn</th>
+                            <th>Stad</th>
+                            <th>E-post</th>
+                            <th>Välj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer.given_name }} {{ customer.surname }}</td>
+                            <td>{{ customer.city }}</td>
+                            <td>{{ customer.email_address }}</td>
+                            <td>
+                                <a href="{{ url_for('withdraw_page', customer_id=customer.id) }}" class="btn btn-success">Välj</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Visa kundens konton om en kund är vald -->
+        {% if selected_customer %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Välj konto att ta ut pengar från</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Kontonummer</th>
+                            <th>Kontotyp</th>
+                            <th>Saldo</th>
+                            <th>Välj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in selected_customer.accounts %}
+                        <tr>
+                            <td>{{ account.id }}</td>
+                            <td>{{ account.account_type.value }}</td>
+                            <td>{{ account.balance }} kr</td>
+                            <td>
+                                <a href="{{ url_for('withdraw_page', customer_id=selected_customer.id, account_id=account.id) }}" class="btn btn-info">Välj</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Flash message display -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Uttag</h2>
+        </div>
+
+        <!-- Uttagsformulär om konto är valt -->
+        {% if selected_account %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Gör ett uttag</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('withdraw_page', customer_id=selected_customer.id, account_id=selected_account.id) }}">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Belopp att ta ut (kr)</label>
+                        <input type="number" name="amount" step="0.01" min="0.01" required class="form-control" placeholder="Ange belopp att ta ut">
+                    </div>
+                    <button type="submit" class="btn btn-danger">Ta ut</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        
+            <!-- Back Button -->
+            <div class="mt-4">
+                <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till Dashboard</a>
+            </div>
+    </div>
+</main>
+{% endblock %}

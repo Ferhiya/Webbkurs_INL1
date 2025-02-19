@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Konto Detaljer - Lindas SUPER-BANK{% endblock %}
+
+{% block content %}
+<main class="container-fluid">
+    <div class="row">
+        <div class="col-md-9 mb-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Detaljer för konto: {{ account.id }}</h2>
+            </div>
+
+            <!-- Konto Detaljer -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Konto Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Kontonummer:</strong> {{ account.id }}</p>
+                    <p><strong>Saldo:</strong> {{ account.balance }} SEK</p>
+                    <p><strong>Kontotyp:</strong> {{ account.account_type.value }}</p>
+                </div>
+            </div>
+
+            <!-- Transaktioner -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Transaktioner</h5>
+                </div>
+                <div class="card-body">
+                    {% if transactions %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Typ</th>
+                                <th>Belopp</th>
+                                <th>Datum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.type.value }}</td>
+                                <td>{{ transaction.amount }} SEK</td>
+                                <td>{{ transaction.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>Inga transaktioner hittades för detta konto.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ url_for('view_account', customer_id=account.customer_id) }}" class="btn btn-secondary">Tillbaka till kundprofil</a>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

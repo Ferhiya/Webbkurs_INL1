@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Skapa Konto för {{ customer.given_name }} - Lindas SUPER-BANK{% endblock %}
+
+{% block content %}
+<main class="container-fluid">
+    <div class="row">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Skapa Konto för {{ customer.given_name }} {{ customer.surname }}</h2>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul>
+            {% for category, message in messages %}
+              <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Fyll i kontoinformation</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- CSRF token -->
+                        {{ form.hidden_tag() }}
+
+                        <!-- Account Type -->
+                        <div class="mb-3">
+                            <label for="account_type" class="form-label">Kontotyp</label>
+                            {{ form.account_type(class="form-control") }}
+                        </div>
+
+                        <!-- Initial Balance -->
+                        <div class="mb-3">
+                            <label for="initial_balance" class="form-label">Initial saldo</label>
+                            {{ form.initial_balance(class="form-control", placeholder="Ange startbelopp") }}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">
+                            Skapa Konto
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock %}

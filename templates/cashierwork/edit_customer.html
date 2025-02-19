@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Redigera Kund - Lindas SUPER-BANK{% endblock %}
+
+{% block content %}
+<main class="container">
+    <h2>Redigera Kund</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul>
+        {% for category, message in messages %}
+          <p class="alert alert-{{ category }}">{{ message }}</p>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  
+    <form method="POST">
+        <div class="mb-3">
+            <label for="given_name" class="form-label">Förnamn</label>
+            <input type="text" class="form-control" id="given_name" name="given_name" value="{{ customer.given_name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="surname" class="form-label">Efternamn</label>
+            <input type="text" class="form-control" id="surname" name="surname" value="{{ customer.surname }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="streetaddress" class="form-label">Gatuadress</label>
+            <input type="text" class="form-control" id="streetaddress" name="streetaddress" value="{{ customer.streetaddress }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="city" class="form-label">Stad</label>
+            <input type="text" class="form-control" id="city" name="city" value="{{ customer.city }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="zipcode" class="form-label">Postnummer</label>
+            <input type="text" class="form-control" id="zipcode" name="zipcode" value="{{ customer.zipcode }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="country" class="form-label">Land</label>
+            <input type="text" class="form-control" id="country" name="country" value="{{ customer.country }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="country_code" class="form-label">Landskod</label>
+            <input type="text" class="form-control" id="country_code" name="country_code" value="{{ customer.country_code }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="telephone_country_code" class="form-label">Telefon Landskod</label>
+            <input type="text" class="form-control" id="telephone_country_code" name="telephone_country_code" value="{{ customer.telephone_country_code }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="telephone" class="form-label">Telefonnummer</label>
+            <input type="text" class="form-control" id="telephone" name="telephone" value="{{ customer.telephone }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email_address" class="form-label">E-post</label>
+            <input type="email" class="form-control" id="email_address" name="email_address" value="{{ customer.email_address }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Spara ändringar</button>
+        <a href="{{ url_for('view_account', customer_id=customer.id) }}" class="btn btn-secondary">Avbryt</a>
+    </form>
+</main>
+{% endblock %}

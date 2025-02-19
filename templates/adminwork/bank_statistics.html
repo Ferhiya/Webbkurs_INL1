@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Bankstatistik{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Bankstatistik</h2>
+
+    <!-- Välj statistiktyp -->
+    <form method="GET" action="{{ url_for('bank_statistics') }}" class="mb-3">
+        <label for="stat_type" class="form-label">Välj statistiktyp:</label>
+        <select name="stat_type" class="form-select" onchange="this.form.submit()">
+            <option value="overview" {% if stat_type == 'overview' %}selected{% endif %}>Detaljerad bankstatistik</option>
+            <option value="country" {% if stat_type == 'country' %}selected{% endif %}>Statistik per land</option>
+        </select>
+    </form>
+
+    <hr>
+
+    {% if stat_type == 'overview' %}
+        <!-- Visa detaljerad bankstatistik -->
+            <div class="stat">
+                <h1>Översikt</h1>
+                <h2>Antal Kunder</h2>
+                <p>{{ total_customers }}</p>
+            </div>
+            <div class="stat">
+                <h2>Antal Konton</h2>
+                <p>{{ total_accounts }}</p>
+            </div>
+            <div class="stat">
+                <h2>Summan av Saldon</h2>
+                <p>{{ total_balance }}</p> <!-- Här visas summan med " kr" -->
+            </div>
+
+            {% elif stat_type == 'country' %}
+            <!-- Visa statistik per land -->
+            <div class="bank-table">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Land</th>
+                                <th>Antal kunder</th>
+                                <th>Antal konton</th>
+                                <th>Totalt saldo</th>
+                                <th>Visa toppkunder</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for country in country_stats %}
+                            <tr>
+                                <td>{{ country.country }}</td>
+                                <td>{{ country.total_customers }}</td>
+                                <td>{{ country.total_accounts }}</td>
+                                <td>{{ country.total_balance }} kr</td>
+                                <td><a href="{{ url_for('top_customers', country=country.country) }}" class="btn btn-primary btn-sm">Visa topp 10</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+</div>
+{% endblock %}

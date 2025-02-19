@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Lindas SUPER-BANK{% endblock %}
+
+{% block content %}
+<main class="container-fluid">
+    <div class="row">
+        <!-- Side Navigation -->
+        
+            
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Välkommen till Admin Panel</h2>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Manage Users</h5>
+                    </div>
+                    <div class="card-body">
+                        <a class="nav-link" href="/manageUsers">
+                            <i class="bi bi-person-lines-fill"></i> Hantera användare & roller
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title"> Övervaka misstänkta transaktioner</h5>
+                    </div>
+                    <div class="card-body">
+                        <a class="nav-link" href="/adminwork/fraud_detection">
+                            <i class="bi bi-shield-lock"></i> Övervaka misstänkta transaktioner
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title"> Hantera API & Batch-jobb</h5>
+                    </div>
+                    <div class="card-body">
+                        <a class="nav-link" href="/manageUsers">
+                            <i class="bi bi-person-lines-fill"></i> Hantera användare & roller
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Bank Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <a class="nav-link" href="/adminwork/bank_statistics">
+                            <i class="bi bi-bar-chart-line"></i> Visa bankstatistik
+                        </a>
+                    </div>
+                </div>
+            </div>
+    </div>
+</main>
+{% endblock %}

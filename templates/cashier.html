@@ -7,10 +7,34 @@
     <div class="row">
       
         <!-- Main Content Area -->
+         
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h2>Välkommen till cashier Panel</h2>
-        </div>
 
+            <h2>Välkommen till  Cashier Panel</h2>
+            
+            <div class="d-flex flex-column align-items-center mb-3">
+                <img src="https://robohash.org/{{ current_user.email }}" class="profil-img">
+                <h5 class="mt-2">{{ current_user.email }}</h5>
+            </div>
+            
+        </div>
+        <div class="snabbåtkomst">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Snabbåtkomst till kund</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('view_account') }}">
+                        <div class="input-group">
+                            <input type="number" name="customer_id" class="form-control" placeholder="Ange kund-ID" required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Sök
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header">
@@ -85,23 +109,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">Snabbåtkomst till kund</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="GET" action="{{ url_for('view_account') }}">
-                            <div class="input-group">
-                                <input type="number" name="customer_id" class="form-control" placeholder="Ange kund-ID" required>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-search"></i> Sök
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            
+        
             
         </div>
 </main>

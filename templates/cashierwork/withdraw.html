@@ -88,16 +88,7 @@
         </div>
         {% endif %}
 
-        <!-- Flash message display -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} mt-3" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+        
 
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h2>Uttag</h2>
@@ -114,6 +105,7 @@
                     <div class="mb-3">
                         <label for="amount" class="form-label">Belopp att ta ut (kr)</label>
                         <input type="number" name="amount" step="0.01" min="0.01" required class="form-control" placeholder="Ange belopp att ta ut">
+                        <input for="account_id" name="account_id" value="{{selected_account.id}}">
                     </div>
                     <button type="submit" class="btn btn-danger">Ta ut</button>
                 </form>
@@ -123,7 +115,7 @@
         
             <!-- Back Button -->
             <div class="mt-4">
-                <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till Dashboard</a>
+                <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till  Cashier Panel</a>
             </div>
     </div>
 </main>

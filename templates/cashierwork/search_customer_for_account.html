@@ -1,48 +1,59 @@
 {% extends 'base.html' %}
 
-{% block title %}Sök Kund för Konto - Lindas SUPER-BANK{% endblock %}
+{% block title %}Sök Kund - Lindas SUPER-BANK{% endblock %}
 
 {% block content %}
 <main class="container-fluid">
     <div class="row">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h2>Sök Kund för Konto</h2>
-        </div>
-
-        <!-- Search form -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Sök efter kund</h5>
-                </div>
-                <div class="card-body">
-                    <form method="GET" action="{{ url_for('search_customer_for_account') }}">
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control" placeholder="Sök efter kund (namn)" value="{{ search_query }}">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search"></i> Sök
-                            </button>
-                        </div>
-                    </form>
-                </div>
+        <div class="col-md-9 mb-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Sök efter kund</h2>
             </div>
-        </div>
 
-        <!-- Search results -->
-        <div class="col-md-12 mb-4">
-            {% if customers %}
-                <div class="list-group">
-                    {% for customer in customers %}
-                    <a href="{{ url_for('create_account', customer_id=customer.id) }}" class="list-group-item list-group-item-action">
-                        <h5 class="mb-1">{{ customer.given_name }} {{ customer.surname }}</h5>
-                        <p class="mb-1">Stad: {{ customer.city }}</p>
-                    </a>
-                    {% endfor %}
+            <!-- Search Form -->
+            <form method="GET" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Sök efter namn, ID eller e-post..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">Sök</button>
                 </div>
-            {% else %}
-                <p>No customers found matching "{{ search_query }}"</p>
+            </form>
+
+            {% if search_query and customers %}
+                <h4>Resultat för "{{ search_query }}"</h4>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Förnamn</th>
+                            <th>Efternamn</th>
+                            <th>Email</th>
+                            <th>Åtgärd</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer.id }}</td>
+                            <td>{{ customer.given_name }}</td>
+                            <td>{{ customer.surname }}</td>
+                            <td>{{ customer.email_address }}</td>
+                            <td>
+                                <a href="{{ url_for('create_account', customer_id=customer.id) }}" class="btn btn-sm btn-success">Skapa Konto</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif search_query %}
+                <p class="text-muted">Inga kunder hittades.</p>
             {% endif %}
         </div>
+        <!-- Back Button -->
+        <div class="mt-4">
+            <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till  Cashier Panel</a>
+        </div>
+
     </div>
 </main>
 {% endblock %}

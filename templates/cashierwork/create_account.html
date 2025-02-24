@@ -8,16 +8,7 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h2>Skapa Konto för {{ customer.given_name }} {{ customer.surname }}</h2>
         </div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <ul>
-            {% for category, message in messages %}
-              <p class="alert alert-{{ category }}">{{ message }}</p>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
-      
+        
         <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header">
@@ -42,8 +33,8 @@
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">
-                            Skapa Konto
-                        </button>
+                            Skapa Konto </button>               
+        <a href="{{ url_for('search_customer_for_account') }}" class="btn btn-secondary">Avbryt</a>
                     </form>
                 </div>
             </div>

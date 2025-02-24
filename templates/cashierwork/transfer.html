@@ -4,111 +4,164 @@
 
 {% block content %}
 <main class="container-fluid">
-    <h2>Överföring mellan konton</h2>
- <!-- Flash message display -->
- {% with messages = get_flashed_messages(with_categories=true) %}
- {% if messages %}
-     {% for category, message in messages %}
-         <div class="alert alert-{{ category }} mt-3" role="alert">
-             {{ message }}
-         </div>
-     {% endfor %}
- {% endif %}
-{% endwith %}
+    <div class="row">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Överföring mellan konton</h2>
+        </div>
 
-    <form method="POST">
-        <div class="row">
-            <!-- Search for source account - Left side -->
-            <div class="col-md-6">
-                <h4>Källkonto</h4>
-                <div class="form-group">
-                    <label for="source_search">Sök Källkonto:</label>
-                    <input type="text" id="source_search" class="form-control" placeholder="Sök med kundnamn, kontonummer eller saldo" oninput="filterAccounts('source')">
-                </div>
-                <div id="source_results" class="form-group">
-                    <!-- Search results for source account will appear here -->
-                </div>
-                <input type="hidden" name="source_account_id" id="source_account_id">
+        <!-- Sök efter Från-konto -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Sök efter Från-konto</h5>
             </div>
-
-            <!-- Search for destination account - Right side -->
-            <div class="col-md-6">
-                <h4>Målkonto</h4>
-                <div class="form-group">
-                    <label for="destination_search">Sök Målkonto:</label>
-                    <input type="text" id="destination_search" class="form-control" placeholder="Sök med kundnamn, kontonummer eller saldo" oninput="filterAccounts('destination')">
-                </div>
-                <div id="destination_results" class="form-group">
-                    <!-- Search results for destination account will appear here -->
-                </div>
-                <input type="hidden" name="destination_account_id" id="destination_account_id">
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('transfer_page', from_search_query=from_search_query, to_search_query=to_search_query) }}" class="d-flex">
+                    <input type="text" name="from_search" value="{{ from_search_query }}" placeholder="Sök kontonummer eller kund" class="form-control me-2" id="from-search">
+                    <button type="submit" class="btn btn-primary" id="from-search-btn">Sök</button>
+                
+                    <!-- Hidden input to keep the selected From account ID -->
+                    <input type="hidden" name="from_account_id" value="{{ from_account.id if from_account else '' }}">
+                    <input type="hidden" name="to_account_id" value="{{ to_account.id if to_account else '' }}">
+                </form>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="amount">Belopp:</label>
-            <input type="text" name="amount" class="form-control" required>
+        {% if from_accounts %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Välj Från-konto</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Kund</th>
+                            <th>Kontonummer</th>
+                            <th>Saldo</th>
+                            <th>Välj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in from_accounts %}
+                        <tr>
+                            <td>{{ account.customer.given_name }} {{ account.customer.surname }}</td>
+                            <td>{{ account.id }}</td>
+                            <td>{{ account.balance }} kr</td>
+                            <td>
+                                <a href="{{ url_for('transfer_page', from_account_id=account.id, to_account_id=to_account_id) }}" class="btn btn-success">Välj</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        {% endif %}
+      
+            <!-- Från-konto -->
+            <div class="alert alert-info mt-3">
 
-        <button type="submit" class="btn btn-primary">Överför</button>
-    </form>
-</main>
-
-<script>
-    // Pass only necessary data for accounts (id, account_type, balance, given_name, surname)
-    var accounts = [
-        {% for account in accounts %}
-            {
-                "id": "{{ account.id }}",
-                "account_type": "{{ account.account_type.value }}",
-                "balance": "{{ account.balance }}",
-                "given_name": "{{ account.customer.given_name }}",
-                "surname": "{{ account.customer.surname }}"
-            },
-        {% endfor %}
-    ];
-
-    // Filter function to show only accounts that match the search term
-    function filterAccounts(type) {
-        var searchValue = document.getElementById(type + '_search').value.toLowerCase();
-        var resultsContainer = document.getElementById(type + '_results');
-        resultsContainer.innerHTML = '';  // Clear previous results
-
-        if (searchValue) {
-            // Loop through all accounts and check if any match the search query
-            var filteredAccounts = accounts.filter(function(account) {
-                var accountInfo = (account.id + " " + account.account_type + " " + account.balance + " SEK " + account.given_name + " " + account.surname).toLowerCase();
-                return accountInfo.indexOf(searchValue) > -1;
-            });
-
-            // Display the filtered results
-            filteredAccounts.forEach(function(account) {
-                var accountElement = document.createElement('div');
-                accountElement.classList.add('account-option');
-                accountElement.innerHTML = `
-                    <div>
-                        <strong>${account.id}</strong> - ${account.account_type} (${account.balance} SEK) - ${account.given_name} ${account.surname}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Från-konto</h5>
+                        {% if from_account %}
+                            <p><strong>Kontonummer:</strong> {{ from_account.id }}</p>
+                            <p><strong>Ägare:</strong> {{ from_account.customer.given_name }} {{ from_account.customer.surname }}</p>
+                            <p><strong>Saldo:</strong> {{ from_account.balance }} kr</p>
+                        {% else %}
+                            <p class="text-muted">Inget valt</p>
+                        {% endif %}
                     </div>
-                    <button type="button" class="btn btn-link" onclick="selectAccount('${type}', ${account.id})">Välj konto</button>
-                `;
-                resultsContainer.appendChild(accountElement);
-            });
-        }
-    }
+                </div>
 
-    // Function to select an account from the search results
-    function selectAccount(type, accountId) {
-        var selectedAccount = accounts.find(function(account) {
-            return account.id == accountId;
-        });
+            </div>
+    
 
-        // Set the selected account id in the hidden input field
-        document.getElementById(type + '_account_id').value = selectedAccount.id;
-        document.getElementById(type + '_search').value = selectedAccount.account_type + ' ' + selectedAccount.given_name + ' ' + selectedAccount.surname;
+        <!-- Sök efter Till-konto -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Sök efter Till-konto</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('transfer_page', from_search_query=from_search_query, to_search_query=to_search_query) }}" class="d-flex">
+                    <input type="text" name="to_search" value="{{ to_search_query }}" placeholder="Sök kontonummer eller kund" class="form-control me-2" id="to-search">
+                    <button type="submit" class="btn btn-primary" id="to-search-btn">Sök</button>
+                
+                    <!-- Hidden input to keep the selected To account ID -->
+                    <input type="hidden" name="from_account_id" value="{{ from_account.id if from_account else '' }}">
+                    <input type="hidden" name="to_account_id" value="{{ to_account.id if to_account else '' }}">
+                </form>
+            </div>
+        </div>
 
-        // Hide the results after selection
-        document.getElementById(type + '_results').innerHTML = '';
-    }
-</script>
+      
+
+        {% if to_accounts %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Välj Till-konto</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Kund</th>
+                            <th>Kontonummer</th>
+                            <th>Saldo</th>
+                            <th>Välj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in to_accounts %}
+                        <tr>
+                            <td>{{ account.customer.given_name }} {{ account.customer.surname }}</td>
+                            <td>{{ account.id }}</td>
+                            <td>{{ account.balance }} kr</td>
+                            <td>
+                                <a href="{{ url_for('transfer_page', from_account_id=from_account_id, to_account_id=account.id) }}" class="btn btn-success">Välj</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="alert alert-info mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Till-konto</h5>
+                    {% if to_account %}
+                        <p><strong>Kontonummer:</strong> {{ to_account.id }}</p>
+                        <p><strong>Ägare:</strong> {{ to_account.customer.given_name }} {{ to_account.customer.surname }}</p>
+                        <p><strong>Saldo:</strong> {{ to_account.balance }} kr</p>
+                    {% else %}
+                        <p class="text-muted">Inget valt</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+ 
+        
+        <!-- Överföringsformulär -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Genomför överföring</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('transfer_page', from_account_id=from_account.id if from_account else '', to_account_id=to_account.id if to_account else '') }}">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Belopp (kr)</label>
+                        <input type="number" name="amount" step="0.01" min="0.01" required class="form-control" {% if not from_account or not to_account %}disabled{% endif %}>
+                    </div>
+                    <button type="submit" class="btn btn-success" {% if not from_account or not to_account %}disabled{% endif %}>Överför</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% endblock %}

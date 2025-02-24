@@ -9,15 +9,7 @@
             <h2>Välkommen till Kund Panel</h2>
         </div>
         
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <ul>
-            {% for category, message in messages %}
-              <p class="alert alert-{{ category }}">{{ message }}</p>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
+      
         <!-- Main Content Area -->
         <div class="col-md-9 mb-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -60,6 +52,7 @@
                         <thead>
                             <tr>
                                 <th>Förnamn</th>
+                                <th>Efternamn</th>
                                 <th>E-post</th>
                                 <th>Stad</th>
                                 <th>Kontosaldo</th>
@@ -73,6 +66,7 @@
                                 {% for customer in customers %}
                                 <tr>
                                     <td>{{ customer.given_name }}</td>
+                                    <td>{{ customer.surname }}</td>
                                     <td>{{ customer.email_address }}</td>
                                     <td>{{ customer.city }}</td>
                                     <td>{{ customer.total_balance }} SEK</td>
@@ -119,7 +113,7 @@
 
             <!-- Back Button -->
             <div class="mt-4">
-                <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till Dashboard</a>
+                <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till  Cashier Panel</a>
             </div>
         </div>
     </div>

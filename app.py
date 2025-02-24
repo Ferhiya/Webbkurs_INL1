@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 from models import db, seedData, Customer, Account, user_datastore, User, Role, Transaction, TransactionOperation, TransactionType, AccountType
 import os
 from dotenv import load_dotenv
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, String
 from decimal import Decimal
 import random
 import decimal
@@ -39,7 +39,7 @@ def startpage():
     total_customers = Customer.query.count()
     total_accounts = Account.query.count()
     total_balance = db.session.query(db.func.sum(Account.balance)).scalar() or 0.0
-    total_balance_str = f"{round(total_balance, 2)} kr"
+    total_balance_str = f"{round(total_balance, 2)}"
 
     # Hämta statistik per land
     country_stats = db.session.query(
@@ -67,7 +67,7 @@ def custom_login():
         user = User.query.filter_by(email=email).first()
         if user and verify_password(password, user.password):
             login_user(user)
-            flash("Login successful!", "success")
+            flash("Inloggning lyckades!", "success")
 
             # Redirect based on user role
             if user.has_role("Admin"):
@@ -77,7 +77,7 @@ def custom_login():
             else:
                 return redirect(url_for("startpage"))
         else:
-            flash("Invalid email or password.", "danger")
+            flash("Icke godkänd email eller lösenord.", "danger")
 
     return render_template("login.html")
 
@@ -85,8 +85,8 @@ def custom_login():
 @app.route("/logout")
 def logout():
     logout_user()
-    flash("You have been logged out.", "success")
-    return redirect(url_for("custom_login"))
+    flash("Du har loggat ut.", "success")
+    return redirect(url_for("custom_login"))  # Redirects to login page
 
 #------------Cashier work pages-----------
 @app.route("/cashier", methods=["GET", "POST"])
@@ -98,6 +98,7 @@ def cashier_page():
 
 
 
+#search customer
 @app.route("/cashierwork/customer", methods=["GET", "POST"])
 @login_required
 @roles_required("Cashier")
@@ -156,7 +157,7 @@ def customer_page():
     
     
 
-# View account route
+# View account
 @app.route("/cashierwork/view_account", methods=["GET"])
 @login_required
 @roles_required("Cashier")
@@ -176,6 +177,7 @@ def view_account():
     return render_template("cashierwork/view_account.html", customer=customer)
 
 
+#transactions record/history for accounts
 @app.route('/cashierwork/account_details/<int:account_id>')
 @login_required
 @roles_required("Cashier")
@@ -203,7 +205,7 @@ def account_details(account_id):
 
 
 
-    
+#Edit customer   
 @app.route('/cashierwork/edit_customer/<int:customer_id>', methods=['GET', 'POST'])
 @login_required
 @roles_required("Cashier")
@@ -226,61 +228,61 @@ def edit_customer(customer_id):
         
         # Server-side validation
         if not all([customer.given_name, customer.surname, customer.streetaddress, customer.city, customer.zipcode, customer.country, customer.country_code, customer.telephone_country_code, customer.telephone, customer.email_address]):
-            flash('All fields are required!', 'danger')
+            flash('Alla fält måste fyllas i!', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         # Validate that the length of the input fields doesn't exceed the maximum lengths defined in the model
         if len(customer.given_name) > 50 or len(customer.surname) > 50:
-            flash('Given Name and Surname cannot exceed 50 characters.', 'danger')
+            flash('Namn och efter namn kan inte vara mer än 50 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         if len(customer.streetaddress) > 50:
-            flash('Street Address cannot exceed 50 characters.', 'danger')
+            flash('Adress kan inte vara mer än 50 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         if len(customer.city) > 70:
-            flash('City cannot exceed 70 characters.', 'danger')
+            flash('Stad kan inte vara mer än 70 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         if len(customer.zipcode) > 15:
-            flash('Zip Code cannot exceed 15 characters.', 'danger')
+            flash('Postnummer kan inte vara mer än 15 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         if len(customer.country) > 60:
-            flash('Country cannot exceed 60 characters.', 'danger')
+            flash('Land kan inte vara mer än 60 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         if len(customer.country_code) != 2:
-            flash('Country Code must be exactly 2 characters.', 'danger')
+            flash('Landskod kan inte kan inte vara mer än 2 kärkaterer.', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
 
 
         if len(customer.telephone_country_code) > 10:
-            flash('Telephone Country Code cannot exceed 10 characters.', 'danger')
+            flash('Telefonkod kan inte vara mer än 10 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         if len(customer.telephone) < 10 or len(customer.telephone) > 20:
-            flash('Telephone number must be between 10 to 15 digits.', 'danger')
+            flash('Telefon kan inte vara mer än 10 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         if len(customer.email_address) > 50:
-            flash('Email Address cannot exceed 50 characters.', 'danger')
+            flash('Email kan inte vara mer än 50 kärkaterer', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
         # Validate email format
         if not validate_email(customer.email_address):
-            flash('Invalid email format.', 'danger')
+            flash('Icke godkänd email format', 'danger')
             return redirect(url_for('edit_customer', customer_id=customer.id))
 
 
@@ -293,40 +295,30 @@ def edit_customer(customer_id):
     return render_template('cashierwork/edit_customer.html', customer=customer)
 
 
-@app.route("/cashierwork/search_customer_for_account", methods=["GET", "POST"])
+#search customer
+@app.route("/cashierwork/search_customer_for_account", methods=["GET"])
 @login_required
 @roles_required("Cashier")
 def search_customer_for_account():
-    search_query = request.args.get('search', '').strip()  # Get the search term
-    page = request.args.get('page', 1, type=int)
-    per_page = 50  # Number of customers per page
+    search_query = request.args.get("search", "").strip()  # Get the search term
+    customers = []  # Default to an empty list (no results shown initially)
 
-    # Start with all customers
-    customers_query = Customer.query
-
-    # If the search query is provided, filter customers by name (or other fields if needed)
-    if search_query:
-        search_terms = search_query.split(",")  # Split by commas (optional, for multiple terms)
-        search_terms = [term.strip().lower() for term in search_terms]  # Clean up the terms
-
-        # Filter customers based on the search query
-        customers_query = customers_query.filter(
-            func.lower(Customer.given_name).like(f"%{search_query.lower()}%") |
-            func.lower(Customer.surname).like(f"%{search_query.lower()}%") |
-            func.lower(Customer.city).like(f"%{search_query.lower()}%")
-        )
-
-    # Fetch the matching customers with pagination
-    customers = customers_query.paginate(page=page, per_page=per_page, error_out=False)
+    if search_query:  # Only search if a query is entered
+        customers = Customer.query.filter(
+            func.lower(Customer.given_name).like(f"%{search_query.lower()}%")
+            | func.lower(Customer.surname).like(f"%{search_query.lower()}%")
+            | func.cast(Customer.id, String).like(f"%{search_query}%")  # Search by ID (numeric)
+            | func.lower(Customer.email_address).like(f"%{search_query.lower()}%")
+        ).all()  # Fetch all matching customers
 
     return render_template(
         "cashierwork/search_customer_for_account.html",
-        customers=customers.items,
-        search_query=search_query,
-        page=page,
-        total_pages=customers.pages
+        customers=customers,  # Pass the customers list
+        search_query=search_query
     )
-    
+
+ 
+#create account    
 @app.route("/cashierwork/create_account", methods=["GET", "POST"])
 @login_required
 @roles_required("Cashier")
@@ -334,7 +326,7 @@ def create_account():
     customer_id = request.args.get('customer_id')
     customer = Customer.query.get(customer_id)
     if not customer:
-        flash("Customer not found", "danger")
+        flash("Kunden hittades inte!", "danger")
         return redirect(url_for('cashier_page'))
 
     form = AccountForm()
@@ -351,7 +343,7 @@ def create_account():
         db.session.add(account)
         db.session.commit()
 
-        flash("Account created successfully!", "success")
+        flash("Konto har skapats!", "success")
         return redirect(url_for('create_account'))  # Redirect to the cashier page or wherever you want
 
     return render_template("cashierwork/create_account.html", form=form, customer=customer)
@@ -359,8 +351,8 @@ def create_account():
 
 
 
-from flask import flash, redirect, url_for
 
+#Create customer
 @app.route("/cashierwork/create_customer", methods=["GET", "POST"])
 def create_customer():
     if request.method == "POST":
@@ -380,59 +372,59 @@ def create_customer():
 
         # Server-side validation
         if not all([given_name, surname, streetaddress, city, zipcode, country, country_code, birthday, national_id, telephone_country_code, telephone, email_address]):
-            flash('All fields are required!', 'danger')
+            flash('Alla fält måste fyllas in!', 'danger')
             return redirect(url_for('create_customer'))
 
         # Validate that the length of the input fields doesn't exceed the maximum lengths defined in the model
         if len(given_name) > 50 or len(surname) > 50:
-            flash('Given Name and Surname cannot exceed 50 characters.', 'danger')
+            flash('Namn och efternamn kan inte vara mer än 50 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(streetaddress) > 50:
-            flash('Street Address cannot exceed 50 characters.', 'danger')
+            flash('Adress kan inte vara mer än 50 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(city) > 70:
-            flash('City cannot exceed 70 characters.', 'danger')
+            flash('Stad kan inte vara mer än 70 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(zipcode) > 15:
-            flash('Zip Code cannot exceed 15 characters.', 'danger')
+            flash('Postnummer kan inte vara mer än 15 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(country) > 60:
-            flash('Country cannot exceed 60 characters.', 'danger')
+            flash('Land kan inte vara mer än 60 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(country_code) != 2:
-            flash('Country Code must be exactly 2 characters.', 'danger')
+            flash('Landskod kan inte vara mer än 2 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(national_id) > 20:
-            flash('National ID cannot exceed 20 characters.', 'danger')
+            flash('personnummer kan inte vara mer än 20 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(telephone_country_code) > 10:
-            flash('Telephone Country Code cannot exceed 10 characters.', 'danger')
+            flash('Telefonkod kan inte vara mer än 10 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(telephone) < 10 or len(telephone) > 15:
-            flash('Telephone number must be between 10 to 15 digits.', 'danger')
+            flash('Telefon nummer måste vara 10 till 15 kärakerer', 'danger')
             return redirect(url_for('create_customer'))
 
         if len(email_address) > 50:
-            flash('Email Address cannot exceed 50 characters.', 'danger')
+            flash('Email kan inte vara mer än 50 kärkaterer', 'danger')
             return redirect(url_for('create_customer'))
 
         # Validate email format
         if not validate_email(email_address):
-            flash('Invalid email format.', 'danger')
+            flash('Icke godkänd email format!', 'danger')
             return redirect(url_for('create_customer'))
 
         # Validate that the birthdate is not in the future
         birthday_date = datetime.strptime(birthday, '%Y-%m-%d')
         if birthday_date > datetime.now():
-            flash('Birthday cannot be in the future.', 'danger')
+            flash('Födelsedag kan inte vara i framtid!', 'danger')
             return redirect(url_for('create_customer'))
 
         # Check if the email or national ID already exists
@@ -440,11 +432,11 @@ def create_customer():
         customer_by_national_id = db.session.query(Customer).filter_by(national_id=national_id).first()
 
         if customer_by_email:
-            flash('Email address already exists.', 'danger')
+            flash('Email adress används redan.', 'danger')
             return redirect(url_for('create_customer'))
 
         if customer_by_national_id:
-            flash('National ID already exists.', 'danger')
+            flash('Personnummer används redan.', 'danger')
             return redirect(url_for('create_customer'))
 
 
@@ -481,7 +473,7 @@ def create_customer():
         db.session.commit()
 
         # Success message
-        flash('Customer created successfully!', 'success')
+        flash('Kund har skapats!', 'success')
 
         return redirect(url_for('create_customer'))
 
@@ -499,7 +491,7 @@ def validate_email(email):
 
 
 
-#Deposit
+#Deposit money into account
 @app.route("/cashierwork/deposit", methods=["GET", "POST"])
 @login_required
 @roles_required("Cashier")
@@ -541,6 +533,7 @@ def deposit_page():
             if amount <= 0:
                 flash("Beloppet måste vara större än 0.", "danger")
                 return redirect(url_for("deposit_page", customer_id=customer_id, account_id=account_id))
+            
 
             # Calculate new balance
             new_balance = selected_account.balance + amount
@@ -579,7 +572,7 @@ def deposit_page():
     )
 
 
-#withdraw money
+#withdraw money from account
 @app.route("/cashierwork/withdraw", methods=["GET", "POST"])
 @login_required
 @roles_required("Cashier")
@@ -610,7 +603,9 @@ def withdraw_page():
     if request.method == "POST" and selected_account:
         try:
             amount_str = request.form.get("amount", "0").strip()
-
+            account_str= request.form.get("account_id", type=int)
+            selected_account = Account.query.filter_by(id=account_str).first()
+            
             # Check if amount is a valid decimal number
             try:
                 amount = decimal.Decimal(amount_str)
@@ -635,7 +630,7 @@ def withdraw_page():
                 type=TransactionType.DEBIT,  # Use DEBIT for withdrawals
                 operation=TransactionOperation.BANK_WITHDRAWL,
                 date=datetime.utcnow(),
-                amount=amount,
+                amount=-amount,
                 new_balance=new_balance,
                 account_id=selected_account.id
             )
@@ -650,7 +645,11 @@ def withdraw_page():
             db.session.commit()
 
             flash(f"Uttag på {amount} kr lyckades!", "success")
-            return redirect(url_for("withdraw_page", customer_id=customer_id))
+            return redirect(url_for(
+              "withdraw_page", customers=customers,
+               search_query=search_query,
+               selected_customer=selected_customer,
+               selected_account=selected_account))
 
         except Exception as e:
             db.session.rollback()  # Rollback in case of error
@@ -665,86 +664,107 @@ def withdraw_page():
         selected_account=selected_account
     )
     
-    
-
-
+ 
+#transfer money between accounts and customers    
 @app.route('/cashierwork/transfer', methods=['GET', 'POST'])
 @login_required
 @roles_required("Cashier")
-def transfer():
-    if request.method == 'POST':
-        # Get form data
-        source_account_id = request.form.get('source_account_id')
-        destination_account_id = request.form.get('destination_account_id')
-        transfer_amount = request.form.get('amount')
+def transfer_page():
+    
+    
+    from_search_query = request.args.get("from_search", "") 
+    to_search_query = request.args.get("to_search", "") 
+    from_accounts = [] #variabler för att spara sökreultat
+    to_accounts = [] #variabler för att spara sökreultat
+    from_account = None
+    to_account = None
 
-        # Convert amount to Decimal
-        try:
-            transfer_amount = Decimal(transfer_amount)
-        except:
-            flash("Ogiltigt belopp. Försök igen.", "danger")
-            return redirect(url_for('transfer'))
+   #söker i databasen för att see om det finns customers som matchar sökresultaet (Från-konto) 
+    if from_search_query:
+        from_accounts = Account.query.join(Customer).filter(
+            (Account.id.ilike(f"%{from_search_query}%")) |
+            (Customer.given_name.ilike(f"%{from_search_query}%")) |
+            (Customer.surname.ilike(f"%{from_search_query}%"))
+        ).all()
 
-        if transfer_amount <= 0:
-            flash("Beloppet måste vara större än 0.", "danger")
-            return redirect(url_for('transfer'))
+    #söker i databasen för att see om det finns customers som matchar sökresultaet (Till-konto)
+    if to_search_query:
+        to_accounts = Account.query.join(Customer).filter(
+            (Account.id.ilike(f"%{to_search_query}%")) |
+            (Customer.given_name.ilike(f"%{to_search_query}%")) |
+            (Customer.surname.ilike(f"%{to_search_query}%"))
+        ).all()
 
-        # Fetch the accounts
-        source_account = Account.query.get(source_account_id)
-        destination_account = Account.query.get(destination_account_id)
+    # Hämta de valda kontona baserat på ID:n i URL-parametrarna
+    from_account_id = request.args.get("from_account_id")
+    to_account_id = request.args.get("to_account_id")
 
-        if not source_account or not destination_account:
-            flash("Ett av kontona hittades inte.", "danger")
-            return redirect(url_for('transfer'))
+     # Kontrollera om ett Från-konto är valt och hämta det
+    if from_account_id:
+        from_account = Account.query.get(from_account_id)
+    # Kontrollera om ett Till-konto är valt och hämta det
+    if to_account_id:
+        to_account = Account.query.get(to_account_id)
 
-        # Ensure sufficient balance in the source account
-        if source_account.balance < transfer_amount:
-            flash("Otillräckligt saldo på källkontot.", "danger")
-            return redirect(url_for('transfer'))
 
-        # Proceed with the transfer
-        try:
-            # Debit the source account=take money out from account
-            source_account.balance -= transfer_amount
+     # Hantera POST-begäran för överföring aktiveras när cashier klickar på 'Överför'
+    if request.method == "POST":
+        amount = Decimal(request.form.get("amount")) # Hämta det belopp som ska överföras (som en Decimal)
 
-            # Credit the destination account=add money to account
-            destination_account.balance += transfer_amount
-
-            #the sender of the money.
-            transaction_debit = Transaction(
+         # Kontrollera att båda kontona är valda och att Från-kontot har tillräckligt med saldo
+        if from_account and to_account and from_account.balance >= amount:
+            # Genomför överföring: dra beloppet från Från-kontot och lägg till på Till-kontot
+            from_account.balance -= amount  # Minska saldo på Från-kontot
+            to_account.balance += amount    # Öka saldo på Till-kontot
+             
+             
+             # Skapa transaktioner för både Från- och Till-konton och spara i databasen
+            # Debit för Från-konto
+            transaction_from = Transaction(
                 type=TransactionType.DEBIT,
                 operation=TransactionOperation.TRANSFER,
                 date=datetime.utcnow(),
-                amount=transfer_amount,
-                new_balance=source_account.balance,
-                account_id=source_account.id
+                amount=-amount,
+                new_balance=from_account.balance,
+                account_id=from_account.id
             )
-             
-            #the reciver of the money
-            transaction_credit = Transaction(
+            
+             # Kredit för Till-konto
+            transaction_to = Transaction(
                 type=TransactionType.CREDIT,
                 operation=TransactionOperation.TRANSFER,
                 date=datetime.utcnow(),
-                amount=transfer_amount,
-                new_balance=destination_account.balance,
-                account_id=destination_account.id
+                amount=amount,
+                new_balance=to_account.balance,
+                account_id=to_account.id
             )
-
-            # 4. Commit transactions and account balance updates
-            db.session.add(transaction_debit)
-            db.session.add(transaction_credit)
+            
+            # Lägg till transaktionerna i databasen
+            db.session.add(transaction_from)
+            db.session.add(transaction_to)
             db.session.commit()
 
-            flash(f"Överföring på {transfer_amount} SEK lyckades!", "success")
-            return redirect(url_for('transfer'))  # Redirect after success
-        except Exception as e:
-            db.session.rollback()  # Rollback in case of error
-            flash("Något gick fel vid överföringen.", "danger")
-            print(f"Error during transfer: {e}")  # Log the error
+            #skicka feedback message till user. 
+            flash("Överföringen genomfördes!", "success")
+            return redirect(url_for("transfer_page", from_account_id=from_account.id, to_account_id=to_account.id))
 
-    # GET request - render transfer form
-    accounts = Account.query.all()  # Retrieve all accounts for the form
-    return render_template('cashierwork/transfer.html', accounts=accounts)
+        else:
+            flash("Fel: Otillräckligt saldo eller ogiltiga konton!", "danger")
+            
+# Rendera sidan med alla variabler för att visa sökresultat, valda konton och hantera formulärdata
+    return render_template(
+        "cashierwork/transfer.html",  # HTML-sidan som ska renderas
+        from_search_query=from_search_query,  # Skickar sökfrågan för Från-konto
+        to_search_query=to_search_query,  # Skickar sökfrågan för Till-konto
+        from_accounts=from_accounts,  # Skickar listan av Från-konton som matchar sökningen
+        to_accounts=to_accounts,  # Skickar listan av Till-konton som matchar sökningen
+        from_account=from_account,  # Skickar det valda Från-kontot
+        to_account=to_account,  # Skickar det valda Till-kontot
+        from_account_id=from_account_id,  # Skickar ID för det valda Från-kontot
+        to_account_id=to_account_id   # Skickar ID för det valda Till-kontot
+    )
+
+
 
 
 @app.route('/delete_customer/<int:customer_id>', methods=['POST'])
@@ -753,12 +773,12 @@ def delete_customer(customer_id):
 
     # Kolla om kunden har konton
     if customer.accounts:  
-        flash('Cannot delete customer with active accounts.', 'danger')
+        flash('Kan inte ta bort kund med activa konton!', 'danger')
         return redirect(url_for("customer_page"))   # Ändra till rätt vy
 
     db.session.delete(customer)
     db.session.commit()
-    flash('Customer deleted successfully!', 'success')
+    flash('Kund har tagits bort!', 'success')
     return redirect(url_for("customer_page"))  # Ändra till rätt vy
 
 
@@ -818,9 +838,9 @@ def update_role(user_id):
         # Commit the changes
         db.session.commit()
 
-        flash('User role updated successfully!', 'success')
+        flash('Användar roll har uppdaterats!', 'success')
     else:
-        flash('Invalid role selected.', 'danger')
+        flash('icke godkönd roll.', 'danger')
     
     return redirect(url_for('manage_users'))
 
@@ -830,7 +850,7 @@ def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
     db.session.commit()
-    flash('User deleted successfully!', 'success')
+    flash('Användar har tagits bort!', 'success')
     return redirect(url_for('manage_users'))
 
 @app.route('/adminwork/create_user', methods=['GET', 'POST'])
@@ -843,7 +863,7 @@ def create_user():
         # Check if role exists
         role = Role.query.filter_by(name=role_name).first()
         if not role:
-            flash('Role not found!', 'danger')
+            flash('Roll hittas inte!', 'danger')
             return redirect(url_for('manage_users'))
 
         # Use email as fs_uniquifier (simpler)
@@ -857,7 +877,7 @@ def create_user():
         db.session.add(user)
         db.session.commit()
 
-        flash('User created successfully!', 'success')
+        flash('Användare har skaptas!', 'success')
         return redirect(url_for('manage_users'))  
 
     return render_template('adminwork/create_user.html')
@@ -900,7 +920,7 @@ def bank_statistics():
 
 
 
-@app.route('/adminwork/top_customers/<country>')
+@app.route('/top_customers/<country>')
 def top_customers(country):
     # Get the top 10 customers in the country by total balance
     top_customers = db.session.query(
@@ -909,7 +929,7 @@ def top_customers(country):
         db.func.count(Account.id).label('num_accounts')
     ).join(Account).filter(Customer.country == country).group_by(Customer.id).order_by(db.func.sum(Account.balance).desc()).limit(10).all()
 
-    return render_template('adminwork/top_customers.html', country=country, top_customers=top_customers)
+    return render_template('top_customers.html', country=country, top_customers=top_customers)
 
 
 

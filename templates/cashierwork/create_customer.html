@@ -10,16 +10,6 @@
             <h2>Välkommen, Skapa användare</h2>
         </div>
     
-        {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul>
-      {% for category, message in messages %}
-        <p class="alert alert-{{ category }}">{{ message }}</p>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-
         <!-- Main Content Area -->
         <div class="col-md-9 mb-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -93,15 +83,15 @@
                             <input type="email" id="email_address" name="email_address" class="form-control" required maxlength="50">
                         </div>
                     
-                        <button type="submit" class="btn btn-primary mt-3">Create Customer</button>
+                        <button type="submit" class="btn btn-primary">Create Customer</button>
+                        <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka</a>
                     </form>
                 </div>
             </div>
 
             <!-- Back Button -->
-            <div class="mt-4">
-                <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till Dashboard</a>
-            </div>
+          
+
         </div>
     </div>
 </main>

@@ -327,7 +327,7 @@ def create_account():
     customer = Customer.query.get(customer_id)
     if not customer:
         flash("Kunden hittades inte!", "danger")
-        return redirect(url_for('cashier_page'))
+        return redirect(url_for('create_account'))
 
     form = AccountForm()
 
@@ -496,44 +496,32 @@ def validate_email(email):
 @login_required
 @roles_required("Cashier")
 def deposit_page():
-    search_query = request.args.get("search", "").strip()
-    customer_id = request.args.get("customer_id")
-    account_id = request.args.get("account_id")
-
-    customers = []
-    selected_customer = None
     selected_account = None
 
-    # Search for customers
-    if search_query:
-        customers = Customer.query.filter(
-            Customer.given_name.ilike(f"%{search_query}%")
-        ).all()
-
-    # Get the selected customer
-    if customer_id:
-        selected_customer = Customer.query.get(customer_id)
-
-    # Get the selected account
-    if account_id and selected_customer:
-        selected_account = Account.query.get(account_id)
-
     # Handle deposit request
-    if request.method == "POST" and selected_account:
+    if request.method == "POST":
         try:
+            # Get account and amount from the form
             amount_str = request.form.get("amount", "0").strip()
+            account_str = request.form.get("account_id", type=int)
 
-            # Check if amount is a valid decimal number
+            # Fetch the selected account by ID
+            selected_account = Account.query.filter_by(id=account_str).first()
+
+            if not selected_account:
+                flash("Konto hittades inte!. Kontrollera kontonumret.", "danger")
+                return redirect(url_for("deposit_page"))
+
+            # Validate the deposit amount
             try:
                 amount = decimal.Decimal(amount_str)
             except:
                 flash("Ogiltigt belopp, ange ett korrekt nummer.", "danger")
-                return redirect(url_for("deposit_page", customer_id=customer_id, account_id=account_id))
+                return redirect(url_for("deposit_page"))
 
             if amount <= 0:
                 flash("Beloppet måste vara större än 0.", "danger")
-                return redirect(url_for("deposit_page", customer_id=customer_id, account_id=account_id))
-            
+                return redirect(url_for("deposit_page"))
 
             # Calculate new balance
             new_balance = selected_account.balance + amount
@@ -556,20 +544,14 @@ def deposit_page():
             db.session.commit()
 
             flash(f"Insättning på {amount} kr lyckades!", "success")
-            return redirect(url_for("deposit_page", customer_id=customer_id))
+            return redirect(url_for("deposit_page"))
 
         except Exception as e:
             db.session.rollback()  # Rollback in case of error
             flash("Något gick fel. Försök igen.", "danger")
             print(f"Error during deposit: {e}")  # Debugging output
 
-    return render_template(
-        "cashierwork/deposit.html",
-        customers=customers,
-        search_query=search_query,
-        selected_customer=selected_customer,
-        selected_account=selected_account
-    )
+    return render_template("cashierwork/deposit.html", selected_account=selected_account)
 
 
 #withdraw money from account
@@ -577,50 +559,38 @@ def deposit_page():
 @login_required
 @roles_required("Cashier")
 def withdraw_page():
-    search_query = request.args.get("search", "").strip()
-    customer_id = request.args.get("customer_id")
-    account_id = request.args.get("account_id")
-
-    customers = []
-    selected_customer = None
+    # Default values (if any)
     selected_account = None
 
-    # Search for customers
-    if search_query:
-        customers = Customer.query.filter(
-            Customer.given_name.ilike(f"%{search_query}%")
-        ).all()
-
-    # Get the selected customer
-    if customer_id:
-        selected_customer = Customer.query.get(customer_id)
-
-    # Get the selected account
-    if account_id and selected_customer:
-        selected_account = Account.query.get(account_id)
-
     # Handle withdrawal request
-    if request.method == "POST" and selected_account:
+    if request.method == "POST":
         try:
+            # Get account and amount from the form
             amount_str = request.form.get("amount", "0").strip()
-            account_str= request.form.get("account_id", type=int)
+            account_str = request.form.get("account_id", type=int)
+
+            # Fetch the selected account by ID
             selected_account = Account.query.filter_by(id=account_str).first()
-            
-            # Check if amount is a valid decimal number
+
+            if not selected_account:
+                flash("Konto hittades inte!. Kontrollera kontonumret.", "danger")
+                return redirect(url_for("withdraw_page"))
+
+            # Validate the withdrawal amount
             try:
                 amount = decimal.Decimal(amount_str)
             except:
                 flash("Ogiltigt belopp, ange ett korrekt nummer.", "danger")
-                return redirect(url_for("withdraw_page", customer_id=customer_id, account_id=account_id))
+                return redirect(url_for("withdraw_page"))
 
             if amount <= 0:
                 flash("Beloppet måste vara större än 0.", "danger")
-                return redirect(url_for("withdraw_page", customer_id=customer_id, account_id=account_id))
+                return redirect(url_for("withdraw_page"))
 
-            # Ensure there's enough balance
+            # Ensure there's enough balance in the account
             if amount > selected_account.balance:
                 flash("Otillräckligt saldo för uttag.", "danger")
-                return redirect(url_for("withdraw_page", customer_id=customer_id, account_id=account_id))
+                return redirect(url_for("withdraw_page"))
 
             # Calculate new balance (subtract amount for withdrawal)
             new_balance = selected_account.balance - amount
@@ -634,8 +604,6 @@ def withdraw_page():
                 new_balance=new_balance,
                 account_id=selected_account.id
             )
-            
-            
 
             # Update account balance
             selected_account.balance = new_balance
@@ -645,25 +613,15 @@ def withdraw_page():
             db.session.commit()
 
             flash(f"Uttag på {amount} kr lyckades!", "success")
-            return redirect(url_for(
-              "withdraw_page", customers=customers,
-               search_query=search_query,
-               selected_customer=selected_customer,
-               selected_account=selected_account))
+            return redirect(url_for("withdraw_page"))
 
         except Exception as e:
             db.session.rollback()  # Rollback in case of error
             flash("Något gick fel. Försök igen.", "danger")
             print(f"Error during withdrawal: {e}")  # Debugging output
 
-    return render_template(
-        "cashierwork/withdraw.html",
-        customers=customers,
-        search_query=search_query,
-        selected_customer=selected_customer,
-        selected_account=selected_account
-    )
-    
+    return render_template("cashierwork/withdraw.html", selected_account=selected_account)
+
  
 #transfer money between accounts and customers    
 @app.route('/cashierwork/transfer', methods=['GET', 'POST'])

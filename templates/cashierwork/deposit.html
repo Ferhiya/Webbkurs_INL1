@@ -6,118 +6,33 @@
 <main class="container-fluid">
     <div class="row">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h2>Välkommen till insättnings Panel</h2>
+            <h2>Välkommen till Insättning Panel</h2>
         </div>
 
-        <!-- Sök efter kund -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Sök efter kund</h5>
-            </div>
-            <div class="card-body">
-                <form method="GET" action="{{ url_for('deposit_page') }}" class="d-flex">
-                    <input type="text" name="search" value="{{ search_query }}" placeholder="Sök kund" class="form-control me-2">
-                    <button type="submit" class="btn btn-primary">Sök</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Visa sökresultat om det finns kunder -->
-        {% if customers %}
+        <!-- Deposit Form (Account ID and Amount) -->
         <div class="card mt-3">
             <div class="card-header">
-                <h5 class="card-title">Sökresultat</h5>
+                <h5 class="card-title">Gör en Insättning</h5>
             </div>
             <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Namn</th>
-                            <th>Stad</th>
-                            <th>E-post</th>
-                            <th>Välj</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for customer in customers %}
-                        <tr>
-                            <td>{{ customer.given_name }} {{ customer.surname }}</td>
-                            <td>{{ customer.city }}</td>
-                            <td>{{ customer.email_address }}</td>
-                            <td>
-                                <a href="{{ url_for('deposit_page', customer_id=customer.id) }}" class="btn btn-success">Välj</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Visa kundens konton om en kund är vald -->
-        {% if selected_customer %}
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="card-title">Välj konto att sätta in pengar på</h5>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Kontonummer</th>
-                            <th>Kontotyp</th>
-                            <th>Saldo</th>
-                            <th>Välj</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for account in selected_customer.accounts %}
-                        <tr>
-                            <td>{{ account.id }}</td>
-                            <td>{{ account.account_type.value }}</td>
-                            <td>{{ account.balance }} kr</td>
-                            <td>
-                                <a href="{{ url_for('deposit_page', customer_id=selected_customer.id, account_id=account.id) }}" class="btn btn-info">Välj</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-       
-     
-
-     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-         <h2>Insättning</h2>
-     </div>
-
-        <!-- Insättningsformulär om konto är valt -->
-        {% if selected_account %}
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="card-title">Gör en insättning</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{ url_for('deposit_page', customer_id=selected_customer.id, account_id=selected_account.id) }}">
+                <form method="POST" action="{{ url_for('deposit_page') }}">
                     <div class="mb-3">
-                        <label for="amount" class="form-label">Belopp (kr)</label>
-                        <input type="number" name="amount" step="0.01" min="0.01" required class="form-control">
+                        <label for="account_id" class="form-label">Kontonummer</label>
+                        <input type="number" name="account_id" required class="form-control" placeholder="Ange kontonummer">
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Belopp att sätta in (kr)</label>
+                        <input type="number" name="amount" step="0.01" min="0.01" required class="form-control" placeholder="Ange belopp att sätta in">
                     </div>
                     <button type="submit" class="btn btn-success">Sätt in</button>
                 </form>
             </div>
         </div>
-        {% endif %}
 
-        
-            <!-- Back Button -->
-            <div class="mt-4">
-                <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till  Cashier Panel</a>
-            </div>
-
+        <!-- Back Button -->
+        <div class="mt-4">
+            <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till Cashier Panel</a>
+        </div>
     </div>
 </main>
 {% endblock %}

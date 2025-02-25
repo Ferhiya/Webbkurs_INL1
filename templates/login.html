@@ -1,14 +1,63 @@
 {% extends 'base.html' %}
 
-{% block title %}Login Page{% endblock %}
+{% block title %}Login - Lindas SUPER-BANK{% endblock %}
 
 {% block content %}
 
-<h2>Logga In</h2>
-<form action="{{ url_for_security('login') }}" method="POST">
-    {{ login_user_form.hidden_tag() }}
-    {{ login_user_form.email(placeholder='Email') }}
-    {{ login_user_form.password(placeholder='Password') }}
-    {{ login_user_form.submit }}
-  </form>
+<!-- Gradient Section for Login -->
+<section class="d-flex justify-content-center align-items-center">
+  <div class="container py-5">
+    <div class="row d-flex justify-content-center align-items-center">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card gradient-custom text-white">
+          <div class="card-body p-5 text-center">
+
+            <div class="mb-md-5 mt-md-4 pb-5">
+
+              <!-- Header with Bank Name -->
+              <h2 class="fw-bold mb-2 text-uppercase">Lindas SUPER-BANK</h2>
+              <p class="text-white-50 mb-5">Please enter your email and password!</p>
+
+              <!-- Login Form -->
+              <form action="{{ url_for_security('login') }}" method="POST">
+                {{ login_user_form.hidden_tag() }}
+
+                <!-- Email Input -->
+                <div class="form-outline form-white mb-4">
+                  <label class="form-label" for="typeEmailX">Email</label>
+                  {{ login_user_form.email(class="form-control form-control-lg", placeholder="Email") }}
+                </div>
+
+                <!-- Password Input -->
+                <div class="form-outline form-white mb-4">
+                  <label class="form-label" for="typePasswordX">Password</label>
+                  {{ login_user_form.password(class="form-control form-control-lg", placeholder="Password") }}
+                </div>
+
+                <!-- Error Messages (if any) -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }} mt-3" role="alert">
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <!-- Submit Button -->
+                <div class="form-outline form-white mb-4">
+                  {{ login_user_form.submit }}
+                </div>
+              </form>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

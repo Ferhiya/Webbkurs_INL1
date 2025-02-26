@@ -48,13 +48,13 @@
 
             <!-- Logout/LOGIN Button -->
             {% if not current_user.is_authenticated %}
-            <form action="{{ url_for('custom_login') }}" method="GET">
+            <form action="{{ url_for('securityPage.custom_login') }}" method="GET">
                 <button type="submit" class="btn btn-danger">Login</button>
             </form>
             {% endif %}
 
             {% if current_user.is_authenticated %}
-                <form action="{{ url_for('logout') }}" method="GET">
+                <form action="{{ url_for('security.logout') }}" method="GET">
                     <button type="submit" class="btn btn-danger">Logout</button>
                 </form>
             {% endif %}

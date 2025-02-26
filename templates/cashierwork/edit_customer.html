@@ -58,7 +58,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Spara ändringar</button>
-        <a href="{{ url_for('view_account', customer_id=customer.id) }}" class="btn btn-secondary">Avbryt</a>
+        <a href="{{ url_for('CustomerPage.view_account', customer_id=customer.id) }}" class="btn btn-secondary">Avbryt</a>
     </form>
 </main>
 {% endblock %}

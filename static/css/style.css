@@ -98,3 +98,58 @@ div .shadow-index{
     border-radius: 1rem;
 }
 
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    body {
+        margin-top: 5vh; /* Adjust margin for smaller screens */
+    }
+
+    .navbar .nav-link {
+        font-size: 1.2rem;
+    }
+
+    .profil-img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+
+    .table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .page-item {
+        margin: 0.5rem;
+    }
+
+    .gradient-custom {
+        border-radius: 0.5rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .navbar .nav-link {
+        font-size: 1rem;
+    }
+
+    .btn {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    .profil-img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .table {
+        font-size: 0.9rem;
+    }
+}
+

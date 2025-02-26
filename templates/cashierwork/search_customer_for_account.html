@@ -39,7 +39,7 @@
                             <td>{{ customer.surname }}</td>
                             <td>{{ customer.email_address }}</td>
                             <td>
-                                <a href="{{ url_for('create_account', customer_id=customer.id) }}" class="btn btn-sm btn-success">Skapa Konto</a>
+                                <a href="{{ url_for('CustomerPage.create_account', customer_id=customer.id) }}" class="btn btn-sm btn-success">Skapa Konto</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -51,7 +51,7 @@
         </div>
         <!-- Back Button -->
         <div class="mt-4">
-            <a href="{{ url_for('cashier_page') }}" class="btn btn-secondary">Tillbaka till  Cashier Panel</a>
+            <a href="{{ url_for('site.cashier_page') }}" class="btn btn-secondary">Tillbaka till  Cashier Panel</a>
         </div>
 
     </div>

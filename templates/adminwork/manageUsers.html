@@ -30,7 +30,7 @@
                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#changeRoleModal{{ user.id }}">Ändra role</button>
 
                     <!-- Remove User Button -->
-                    <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" class="d-inline">
+                    <form method="POST" action="{{ url_for('UserPage.delete_user', user_id=user.id) }}" class="d-inline">
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?');">Ta bort</button>
                     </form>
                 </td>
@@ -44,7 +44,7 @@
                             <h5 class="modal-title">Change Role for {{ user.email }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <form method="POST" action="{{ url_for('update_role', user_id=user.id) }}">
+                        <form method="POST" action="{{ url_for('UserPage.update_role', user_id=user.id) }}">
                             <div class="modal-body">
                                 <label for="role">Select New Role:</label>
                                 <select name="role" class="form-select">
@@ -69,25 +69,25 @@
         <ul class="pagination justify-content-center">
             {% if page > 1 %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('manage_users', page=page-1, search=search_query) }}">Previous</a>
+                <a class="page-link" href="{{ url_for('UserPage.manage_users', page=page-1, search=search_query) }}">Previous</a>
             </li>
             {% endif %}
             
             {% for p in range(1, total_pages + 1) %}
             <li class="page-item {% if p == page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for('manage_users', page=p, search=search_query) }}">{{ p }}</a>
+                <a class="page-link" href="{{ url_for('UserPage.manage_users', page=p, search=search_query) }}">{{ p }}</a>
             </li>
             {% endfor %}
             
             {% if page < total_pages %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('manage_users', page=page+1, search=search_query) }}">Next</a>
+                <a class="page-link" href="{{ url_for('UserPage.manage_users', page=page+1, search=search_query) }}">Next</a>
             </li>
             {% endif %}
         </ul>
     </nav>
     <div class="mt-4">
-        <a href="{{ url_for('admin_page') }}" class="btn btn-secondary">Tillbaka till Admin Panel</a>
+        <a href="{{ url_for('site.admin_page') }}" class="btn btn-secondary">Tillbaka till Admin Panel</a>
     </div>
 </main>
 

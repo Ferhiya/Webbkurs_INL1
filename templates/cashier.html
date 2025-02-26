@@ -24,7 +24,7 @@
                     <h5 class="card-title">Snabbåtkomst till kund</h5>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="{{ url_for('view_account') }}">
+                    <form method="GET" action="{{ url_for('CustomerPage.view_account') }}">
                         <div class="input-group">
                             <input type="number" name="customer_id" class="form-control" placeholder="Ange kund-ID" required>
                             <button type="submit" class="btn btn-primary">

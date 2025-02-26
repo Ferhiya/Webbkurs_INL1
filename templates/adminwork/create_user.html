@@ -12,7 +12,7 @@
     <!-- User creation form (hidden initially) -->
     <div id="createUserForm" class="overlay">
         <div class="form-container">
-            <form method="POST" action="{{ url_for('create_user') }}">
+            <form method="POST" action="{{ url_for('UserPage.create_user') }}">
                 <h5>Skapa Användare</h5>
                 <div class="form-group">
                     <label for="email">E-post:</label>
@@ -31,7 +31,7 @@
                 </div>
                 <button type="submit" class="btn btn-success">Skapa användare</button>
                 
-                <a href="{{ url_for('admin_page') }}" class="btn btn-secondary">Avbryt</a>
+                <a href="{{ url_for('site.admin_page') }}" class="btn btn-secondary">Avbryt</a>
 
             </form>
         </div>

@@ -16,7 +16,7 @@
                 <h2>Kundkonto för {{ customer.id}} {{ customer.given_name }} {{ customer.surname }}</h2>
 
                 <div>
-                    <a href="{{ url_for('edit_customer', customer_id=customer.id) }}" class="btn btn-warning">Redigera Kund</a>
+                    <a href="{{ url_for('CustomerPage.edit_customer', customer_id=customer.id) }}" class="btn btn-warning">Redigera Kund</a>
                 </div>
             </div>
             
@@ -62,7 +62,7 @@
                                     <td>{{ account.balance }} SEK</td>
                                     <td>{{ account.created.strftime('%Y-%m-%d') }}</td>
                                     <td>
-                                        <a href="{{ url_for('account_details', account_id=account.id) }}" class="btn btn-info">Visa detaljer</a>
+                                        <a href="{{ url_for('CustomerPage.account_details', account_id=account.id) }}" class="btn btn-info">Visa detaljer</a>
                                     </td>
                                     
                                 </tr>
@@ -103,7 +103,7 @@
             </div>
 
             <div class="mt-4">
-                <a href="{{ url_for('customer_page') }}" class="btn btn-secondary">Tillbaka till Kundlista</a>
+                <a href="{{ url_for('CustomerPage.customer_page') }}" class="btn btn-secondary">Tillbaka till Kundlista</a>
             </div>
         </div>
     </div>

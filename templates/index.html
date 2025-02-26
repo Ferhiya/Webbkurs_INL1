@@ -60,7 +60,7 @@
                 <td>{{ country.total_accounts }}</td>
                 <td>{{ country.total_balance }} kr</td>
                 <td>
-                    <a href="{{ url_for('top_customers', country=country.country) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ url_for('UserPage.top_customers', country=country.country) }}" class="btn btn-primary btn-sm">
                         Visa
                     </a>
                 </td>

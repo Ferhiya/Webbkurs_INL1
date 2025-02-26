@@ -15,7 +15,7 @@
                 <h5 class="card-title">Sök efter Från-konto</h5>
             </div>
             <div class="card-body">
-                <form method="GET" action="{{ url_for('transfer_page', from_search_query=from_search_query, to_search_query=to_search_query) }}" class="d-flex">
+                <form method="GET" action="{{ url_for('Transaction.transfer_page', from_search_query=from_search_query, to_search_query=to_search_query) }}" class="d-flex">
                     <input type="text" name="from_search" value="{{ from_search_query }}" placeholder="Sök kontonummer eller kund" class="form-control me-2" id="from-search">
                     <button type="submit" class="btn btn-primary" id="from-search-btn">Sök</button>
                 
@@ -48,7 +48,7 @@
                             <td>{{ account.id }}</td>
                             <td>{{ account.balance }} kr</td>
                             <td>
-                                <a href="{{ url_for('transfer_page', from_account_id=account.id, to_account_id=to_account_id) }}" class="btn btn-success">Välj</a>
+                                <a href="{{ url_for('Transaction.transfer_page', from_account_id=account.id, to_account_id=to_account_id) }}" class="btn btn-success">Välj</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -83,7 +83,7 @@
                 <h5 class="card-title">Sök efter Till-konto</h5>
             </div>
             <div class="card-body">
-                <form method="GET" action="{{ url_for('transfer_page', from_search_query=from_search_query, to_search_query=to_search_query) }}" class="d-flex">
+                <form method="GET" action="{{ url_for('Transaction.transfer_page', from_search_query=from_search_query, to_search_query=to_search_query) }}" class="d-flex">
                     <input type="text" name="to_search" value="{{ to_search_query }}" placeholder="Sök kontonummer eller kund" class="form-control me-2" id="to-search">
                     <button type="submit" class="btn btn-primary" id="to-search-btn">Sök</button>
                 
@@ -118,7 +118,7 @@
                             <td>{{ account.id }}</td>
                             <td>{{ account.balance }} kr</td>
                             <td>
-                                <a href="{{ url_for('transfer_page', from_account_id=from_account_id, to_account_id=account.id) }}" class="btn btn-success">Välj</a>
+                                <a href="{{ url_for('Transaction.transfer_page', from_account_id=from_account_id, to_account_id=account.id) }}" class="btn btn-success">Välj</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -151,7 +151,7 @@
                 <h5 class="card-title">Genomför överföring</h5>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ url_for('transfer_page', from_account_id=from_account.id if from_account else '', to_account_id=to_account.id if to_account else '') }}">
+                <form method="POST" action="{{ url_for('Transaction.transfer_page', from_account_id=from_account.id if from_account else '', to_account_id=to_account.id if to_account else '') }}">
                     <div class="mb-3">
                         <label for="amount" class="form-label">Belopp (kr)</label>
                         <input type="number" name="amount" step="0.01" min="0.01" required class="form-control" {% if not from_account or not to_account %}disabled{% endif %}>
@@ -159,6 +159,10 @@
                     <button type="submit" class="btn btn-success" {% if not from_account or not to_account %}disabled{% endif %}>Överför</button>
                 </form>
             </div>
+        </div>
+        <!-- Back Button -->
+        <div class="mt-4">
+            <a href="{{ url_for('site.cashier_page') }}" class="btn btn-secondary">Tillbaka till Cashier Panel</a>
         </div>
 
     </main>
